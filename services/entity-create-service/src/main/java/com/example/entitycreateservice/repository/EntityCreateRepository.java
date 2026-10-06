@@ -2,6 +2,7 @@ package com.example.entitycreateservice.repository;
 
 import com.example.entitycreateservice.dto.EntityRequestDto;
 import com.example.entitycreateservice.dto.EntityResponseDto;
+import com.example.entitycreateservice.exception.EntityAlreadyExistsException;
 import com.example.entitycreateservice.exception.EntityValidationException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,9 @@ public class EntityCreateRepository {
                 .addValue("entity_location_state",entityRequestDto.getEntity_location_state())
                 .addValue("entity_location_country",entityRequestDto.getEntity_location_country())
                 .addValue("entity_type",entityRequestDto.getEntity_type())
-                .addValue("created_by","SYSTEM");
+                .addValue("user_name",entityRequestDto.getUsername())
+                .addValue("password_hash",entityRequestDto.getPassword())
+                .addValue("created_by","EntityCreateAPI");
         log.info("entityRequestDto:{}",sqlParameterSource);
         try{
             log.info("Starting simpleJdbcCall");
@@ -62,7 +65,10 @@ public class EntityCreateRepository {
                 case 50004 -> "ENTITY_COUNTRY_REQUIRED";
                 case 50005 -> "INVALID_ENTITY_TYPE";
                 case 50006 -> "CREATED_BY_REQUIRED";
-                case 50017 -> "ENTITY_ALREADY_EXISTS";
+                case 50007 -> "USERNAME_REQUIRED";
+                case 50008 -> "PASSWORD_REQUIRED";
+                case 50009 -> "USERNAME_ALREADY_EXISTS";
+                case 50017 -> throw new EntityAlreadyExistsException("ENTITY_ALREADY_EXISTS");
                 default -> "Invalid Entity Creation";
             };
             throw new EntityValidationException(message);

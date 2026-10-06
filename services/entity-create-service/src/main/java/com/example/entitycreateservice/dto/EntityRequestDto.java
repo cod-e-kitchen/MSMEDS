@@ -10,4 +10,7 @@ public class EntityRequestDto {
     private String entity_location_state;
     private String entity_location_country;
     private String entity_type;
+
+    private String username;
+    private String password;
 }
