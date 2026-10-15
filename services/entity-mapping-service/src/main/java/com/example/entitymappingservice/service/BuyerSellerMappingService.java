@@ -10,8 +10,8 @@ import java.util.List;
 public interface BuyerSellerMappingService {
 
     BuyerSellerMappingResponse raiseMappingRequest(BuyerSellerMappingRequest buyerSellerMappingRequest);
-    List<PendingMappingApprovalResponse> getPendingApprovals(Long sellerEntityId);
-    BuyerSellerMappingResponse approveMappingRequest(Long requestId, Long sellerEntityId) ;
-    BuyerSellerMappingResponse rejectMappingRequest(Long requestId, Long sellerEntityId, RejectMappingRequest rejectMappingRequest) ;
+    List<PendingMappingApprovalResponse> getPendingApprovals();
+    BuyerSellerMappingResponse approveMappingRequest(Long requestId) ;
+    BuyerSellerMappingResponse rejectMappingRequest(Long requestId, RejectMappingRequest rejectMappingRequest) ;
 
 }

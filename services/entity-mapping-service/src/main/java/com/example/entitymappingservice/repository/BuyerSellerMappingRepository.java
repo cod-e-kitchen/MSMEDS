@@ -5,6 +5,7 @@ import com.example.entitymappingservice.dto.BuyerSellerMappingResponse;
 import com.example.entitymappingservice.dto.PendingMappingApprovalResponse;
 import com.example.entitymappingservice.dto.RejectMappingRequest;
 import com.example.entitymappingservice.exception.InvalidEntityException;
+import com.example.msmedscommonutil.security.AuthenticatedUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -56,16 +57,16 @@ public class BuyerSellerMappingRepository {
     }
 
     public BuyerSellerMappingResponse raiseMappingRequest
-            (BuyerSellerMappingRequest buyerSellerMappingRequest) {
+            (BuyerSellerMappingRequest buyerSellerMappingRequest, AuthenticatedUser user) {
 
         log.info("In BuyerSellerMappingRepository start...");
 
         log.info("Create Mapping Request");
 
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("buyer_entity_id",  buyerSellerMappingRequest.getBuyerEntityId())
+                .addValue("buyer_entity_id",  user.entityId())
                 .addValue("seller_entity_id",  buyerSellerMappingRequest.getSellerEntityId())
-                .addValue("created_by", "SYSTEM");
+                .addValue("created_by", user.username());
 
         log.info("Create Mapping Reqeust ==> sql parameter source: {}", sqlParameterSource);
 
@@ -94,10 +95,10 @@ public class BuyerSellerMappingRepository {
 
     }
 
-    public List<PendingMappingApprovalResponse> getPendingApprovals(Long sellerEntityId) {
+    public List<PendingMappingApprovalResponse> getPendingApprovals(AuthenticatedUser user) {
         log.info("In BuyerSellerMappingRepository start...");
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
-                .addValue("seller_entity_id",sellerEntityId);
+                .addValue("seller_entity_id",user.entityId());
         log.info("Pending Approval requests => sql parameter source: {}", sqlParameterSource);
         try{
             Map<String, Object> result = getPendingApprovalRequest.execute(sqlParameterSource);
@@ -118,12 +119,12 @@ public class BuyerSellerMappingRepository {
 
     }
 
-    public BuyerSellerMappingResponse approveMappingRequest(Long requestId, Long sellerEntityId) {
+    public BuyerSellerMappingResponse approveMappingRequest(Long requestId, AuthenticatedUser user) {
         log.info("In BuyerSellerMappingRepository start...");
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("request_id", requestId)
-                .addValue("seller_entity_id", sellerEntityId)
-                .addValue("modified_by", sellerEntityId.toString());
+                .addValue("seller_entity_id", user.entityId())
+                .addValue("modified_by", user.username());
         log.info("Approve Mapping Request ==> sql parameter source: {}", sqlParameterSource);
         try{
             Map<String, Object> result = approveMappingRequest.execute(sqlParameterSource);
@@ -144,13 +145,13 @@ public class BuyerSellerMappingRepository {
 
     }
 
-    public BuyerSellerMappingResponse rejectMappingRequest(Long requestId, Long sellerEntityId,  RejectMappingRequest rejectRequest) {
+    public BuyerSellerMappingResponse rejectMappingRequest(Long requestId, AuthenticatedUser user,  RejectMappingRequest rejectRequest) {
         log.info("In BuyerSellerMappingRepository start...");
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource()
                 .addValue("request_id", requestId)
-                .addValue("seller_entity_id", sellerEntityId)
+                .addValue("seller_entity_id", user.entityId())
                 .addValue("rejection_reason", rejectRequest.getRejectionReason())
-                .addValue("modified_by", sellerEntityId.toString());
+                .addValue("modified_by", user.username());
         log.info("Reject Mapping Request ==> sql parameter source: {}", sqlParameterSource);
         try{
             Map<String, Object> result = rejectMappingRequest.execute(sqlParameterSource);

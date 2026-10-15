@@ -22,7 +22,7 @@ public class BuyerSellerMappingController {
 
     @PostMapping("/raise-request")
     public ResponseEntity<BuyerSellerMappingResponse> createMapping
-            (@RequestBody BuyerSellerMappingRequest buyerSellerMappingRequest){
+            (@Valid @RequestBody BuyerSellerMappingRequest buyerSellerMappingRequest){
         BuyerSellerMappingResponse buyerSellerMappingResponse = new BuyerSellerMappingResponse();
         buyerSellerMappingResponse = buyerSellerMappingService.raiseMappingRequest(buyerSellerMappingRequest);
 
@@ -32,20 +32,20 @@ public class BuyerSellerMappingController {
 
     @GetMapping("/pending-approvals")
     public ResponseEntity<List<PendingMappingApprovalResponse>> getPendingApprovals
-            (@RequestParam Long sellerEntityId){
+            (){
 
         List<PendingMappingApprovalResponse> pendingMappingApprovalResponseList =
-                buyerSellerMappingService.getPendingApprovals(sellerEntityId);
+                buyerSellerMappingService.getPendingApprovals();
 
         return new ResponseEntity<>(pendingMappingApprovalResponseList, HttpStatus.OK);
     }
 
     @PostMapping("/{requestId}/approve")
     public ResponseEntity<BuyerSellerMappingResponse> approveMappingBySeller
-            (@PathVariable Long requestId, @RequestParam Long sellerEntityId){
+            (@PathVariable Long requestId){
 
         BuyerSellerMappingResponse buyerSellerMappingResponse =
-                buyerSellerMappingService.approveMappingRequest(requestId, sellerEntityId);
+                buyerSellerMappingService.approveMappingRequest(requestId);
 
         return new ResponseEntity<>(buyerSellerMappingResponse,HttpStatus.OK);
     }
@@ -53,10 +53,16 @@ public class BuyerSellerMappingController {
     @PostMapping("/{requestId}/reject")
     public ResponseEntity<?> rejectMappingBySeller
             (@PathVariable Long requestId,
-             @RequestParam Long sellerEntityId, @Valid @RequestBody RejectMappingRequest rejectRequest){
+             @Valid @RequestBody RejectMappingRequest rejectRequest){
         BuyerSellerMappingResponse buyerSellerMappingResponse =
-                buyerSellerMappingService.rejectMappingRequest(requestId,sellerEntityId,rejectRequest);
+                buyerSellerMappingService.rejectMappingRequest(requestId,rejectRequest);
         return new ResponseEntity<>(buyerSellerMappingResponse, HttpStatus.OK);
     }
+
+    /*TEST ENDPOINT - REMOVE LATER*/
+//    @GetMapping("/test")
+//    public String test(){
+//        return "mapping service working properly";
+//    }
 
 }
